@@ -1,0 +1,5 @@
+{
+	"provider" : "amazon",
+	"keyId" : "<amazons3-keyId>",
+	"key" : "<amazons3-key>"
+}
