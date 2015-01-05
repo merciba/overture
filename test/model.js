@@ -3,60 +3,58 @@ var fs = require('fs'),
 	should = require('should'),
 	config = require('../config.json'),
 	Overture = require('../index.js'),
-	Schema = Overture.Schema,
-	modelTestSchemaOptions = {
-				testString: String,
-				testBool: Boolean,
-				testNum: Number,
-				testArr: Array,
-				timestamp: Date,
-				meta: {
-					numReviews: Number,
-					reviews: Array
-				},
-				admin: Boolean
-			},
-	validTestObj = {
-		testString: "Asdasdasd",
-		testBool: false,
-		testNum: 1234,
-		testArr: [ "asdas", false ],
-		timestamp: new Date(),
-		meta: {
-			numReviews: 123123,
-			reviews: [{text: "This sucks.", timestamp: new Date()}, {text: "This rocks!", timestamp: new Date()}]
-		},
-		admin: true
-	},
-	invalidTestObj = { text: "I'm invalid, I don't match my Schema. :(" },
-	modelTestSchema = new Schema(modelTestSchemaOptions);
+	overture = new Overture(config),
+	Schema = overture.Schema,
+	Document = overture.Document;
 
-Overture.connect(config, 'abstrait.users');
-
-var ModelTest = Overture.model('modelTest', modelTestSchema);
-var modelTest = new ModelTest();
-var model = modelTest
-var error = function(err) { throw new Error(err); };
+var allResults = [];
+var schema = new overture.Schema({ firstname: String, lastname: String, alive: Boolean });
+var RoleModel = overture.model('RoleModels', schema);
 
 describe('Overture.Model', function() {
 
-	it('should create a valid Model instance', function() {
-		modelTest.should.be.an.instanceOf(ModelTest);
-	});
+	describe('Getting Started example', function() {
 
-	it('should save model', function(done) {
-		var cleanup = function(results) {
-			should.exist(results);
-			for (key in results) {
-				(function(model, obj) {
-					model.remove(obj._id).exec().then(function(result) {
-						should.exist(result);
-						done();
-					}, error);
-				})(model, results[key])
-			}
-		}
-		model.save(validTestObj).exec().then(cleanup, error)
-	});
+		it('should save user to db using node-style callback', function(done){
+			RoleModel({ firstname: "Angela", lastname: "Davis", alive: true }, function(err, angela) {
+				angela.should.be.instanceOf(Document);
+				angela.$save(function(err, saved) {
+					saved.should.be.instanceOf(Document);
+					done();
+				});
+			});
+		});
 
+		it('should save user to db using a promise', function(done) {
+			RoleModel({ firstname: "Malcolm", lastname: "X", alive: false }).$save().then(function(malcolm) {
+				malcolm.should.be.instanceOf(Document);
+				done();
+			});
+		})
+		
+
+		it('should find users in db matching conditions using node-style callback', function(done) {
+			RoleModel().find({alive: true }, function(err, results) {
+				results[0].should.be.instanceOf(Document);
+				done();
+			});
+		});
+
+		it('should find users in db matching conditions using a promise', function(done) {
+			var livingRoleModels = RoleModel().find({alive: true });
+
+			livingRoleModels.exec().then(function(results) {
+				results[0].should.be.instanceOf(Document);
+				done(); 
+			});
+		});
+
+		it('should remove documents from db', function(done) {
+			RoleModel().find({}).remove(function(err, results) {
+				results.should.be.ok;
+				done();
+			})
+		});
+
+	});
 });

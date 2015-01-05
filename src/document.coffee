@@ -1,65 +1,62 @@
-Q = require 'q'
-streamifier = require 'streamifier'
-uuid = require 'node-uuid'
+Q 				= require 'q'
+Database 		= require './database'
+ObjectID 		= require('bson').BSONPure.ObjectID
 
-class Document
-	constructor: (@client, @container) ->
-		return @
+class Document 
+	constructor: (@$parent, initialData, options, next) ->
 
-	set: (path, obj, next) ->
-		#console.log "Document.set"
-		deferred = Q.defer()
+		initialData._id = new ObjectID() if not initialData.hasOwnProperty '_id'
+		obj = @$parent.$schema.$validate(initialData)
+		return obj if obj instanceof Error
+
+		for key, prop of obj
+			@[key] = obj[key]
+
+		next null, @ if next
+		if not options?.save?
+			return @$save()
+		else
+			return @
+
+	$save: (next) ->
 		self = @
-		path = "" if not path
-		path += "/" if path.slice -1 is not "/" or ""
+		obj = {}
 
-		obj._id = uuid.v1() if not obj.hasOwnProperty '_id'
+		#console.log "Document.save called with : ", self
 
-		streamifier.createReadStream(new Buffer(JSON.stringify(obj))).pipe(
-			self.client.upload({ container: self.container, remote: "#{path}#{obj._id}" }).on('success', () ->
-				next null, obj if next
-				deferred.resolve obj
-			))
+		for key, prop of self
+			obj[key] = self[key] if not key.match /\$/
 
+		deferred = Q.defer()
+
+		db = new Database self.$parent.$client, self.$parent.$container
+		# db.on "upload", console.log
+
+		handler = (newDoc) ->
+			for key, prop of newDoc
+				self[key] = newDoc[key]
+			deferred.resolve self
+
+		db.write(self.$parent.$schemaName, obj).then handler
+		if next 
+			deferred.promise.then (result) ->
+				next null, result
 		return deferred.promise
 
-	get: (path, obj, next) ->
-		deferred = Q.defer()
-		arr = []
+	###$populate: () ->
 		self = @
-		path = "" if not path
-		path += "/" if path.slice -1 is not "/" or ""
-		obj = {_id: obj} if typeof obj is 'string'
 
-		deferred.resolve false if not obj.hasOwnProperty '_id'
+		db = new Database self.$parent.$client, self.$parent.$container
 
-		self.client.download({ container: self.container, remote: "#{path}#{obj._id}" }).on('data', (chunk) ->
-			arr.push chunk
-		).on 'end', (err, result) ->
-			str = Buffer.concat(arr).toString('utf-8')
-			if str.length
-				result = JSON.parse str
-				next null, result if next
-				deferred.resolve result
-			else
-				next null, false
-				deferred.resolve false
+		return self###
 
-		return deferred.promise
-
-	destroy: (path, _id, next) ->
-		deferred = Q.defer()
+	$remove: (args...) ->
 		self = @
-		path = "" if not path
-		path += "/" if path.slice -1 is not "/" or ""
 
-		self.client.removeFile self.container, "#{path}#{_id}", (err) ->
-			if err
-				next err if next
-				deferred.reject err
-			else
-				deferred.resolve true
+		db = new Database self.$parent.$client, self.$parent.$container
 
-		return deferred.promise
-
+		if self._id
+			return db.destroy(self.$parent.$schemaName, self._id)
+		else return new Error "Document not instantiated. Call $save()"
+	
 module.exports = Document

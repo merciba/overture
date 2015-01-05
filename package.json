@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/merciba/overture",
   "dependencies": {
+    "bson": "^0.2.16",
     "coffee-script": "^1.8.0",
     "node-uuid": "^1.4.2",
     "pkgcloud": "^1.1.0",
