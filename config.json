@@ -1,8 +1,8 @@
 {
 	"storage" : {
 		"provider" : "amazon",
-		"keyId" : "AKIAIKB4EICIUXQCMBVQ",
-		"key" : "itQOmXdxCk7DJlH6n1E62QSwl5/rBU7RSL3L9Xnu"
+		"keyId" : "<amazons3-keyId>",
+		"key" : "<amazons3-key>"
 	},
-	"container" : "abstrait.users"
+	"container" : "<bucket-name>"
 }
