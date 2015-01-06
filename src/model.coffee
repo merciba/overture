@@ -224,11 +224,12 @@ class Model extends events.EventEmitter
 			promises = []
 
 			for value, index in data
-				((obj) ->
-					def = Q.defer()
-					def.resolve obj.$remove()
-					promises.push def.promise
-					)(data[index])
+				if not data[index] instanceof Error 
+					((obj, promises) ->
+						def = Q.defer()
+						def.resolve obj.$remove()
+						promises.push def.promise
+						)(data[index], promises)
 
 			Q.all(promises).then (results) ->
 				for result, index in results
