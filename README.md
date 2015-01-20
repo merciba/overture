@@ -23,6 +23,10 @@ where `<keyId>` and `<key>` are valid Amazon S3 API credentials and `<container>
 Getting Started
 ---------------
 
+```
+	sudo npm install overture
+```
+
 Overture aims to simplify the [Mongoose](http://mongoosejs.com/) syntax for making queries and modeling objects. Initialize like so:
 
 ```Javascript
