@@ -1,6 +1,6 @@
 {
   "name": "overture",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "An ODM for cloud storage",
   "main": "index.js",
   "scripts": {
@@ -27,7 +27,6 @@
   "dependencies": {
     "bson": "^0.2.16",
     "coffee-script": "^1.8.0",
-    "node-uuid": "^1.4.2",
     "pkgcloud": "^1.1.0",
     "q": "^1.1.2",
     "streamifier": "^0.1.0"

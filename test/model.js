@@ -53,7 +53,7 @@ describe('Overture.Model', function() {
 			RoleModel().find({}).remove(function(err, results) {
 				results.should.be.ok;
 				done();
-			})
+			});
 		});
 
 	});

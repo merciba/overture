@@ -1,4 +1,4 @@
-Overture [Beta]
+Overture
 ========
 
 A mongoose-style ODM for cloud storage.

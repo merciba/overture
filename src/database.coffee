@@ -1,6 +1,5 @@
 Q = require 'q'
 streamifier = require 'streamifier'
-uuid = require 'node-uuid'
 events = require 'events'
 ObjectID = require('bson').BSONPure.ObjectID
 
