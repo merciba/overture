@@ -24,7 +24,7 @@ Getting Started
 ---------------
 
 ```
-	sudo npm install overture
+npm install overture
 ```
 
 Overture aims to simplify the [Mongoose](http://mongoosejs.com/) syntax for making queries and modeling objects. Initialize like so:
