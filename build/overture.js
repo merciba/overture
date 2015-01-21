@@ -8,18 +8,13 @@ Overture = (function() {
     if (args[0]) {
       if ((args[0].hasOwnProperty('storage')) && (args[0].hasOwnProperty('container'))) {
         this.config = args[0];
-        this.Schema = require('./schema');
-        this.Database = require('./database');
-        this.Document = require('./document');
-        this.Model = require('./model');
         this.models = {};
         return this;
       } else {
         throw new Error("Incorrect config. Config accepts this format: \n{ \nstorage: { ...pkgcloud storage config... }, \ncontainer: '<your-container-name>' \n}");
       }
-    } else {
-      throw new Error("Incorrect config. Config accepts this format: \n{ \nstorage: { ...pkgcloud storage config... }, \ncontainer: '<your-container-name>' \n}");
     }
+    this;
   }
 
   Overture.prototype.model = function(name, schema) {
@@ -40,6 +35,14 @@ Overture = (function() {
       throw new Error("Model must have a name and Schema passed as args.");
     }
   };
+
+  Overture.prototype.Schema = require('./schema');
+
+  Overture.prototype.Database = require('./database');
+
+  Overture.prototype.Document = require('./document');
+
+  Overture.prototype.Model = require('./model');
 
   return Overture;
 

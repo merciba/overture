@@ -50,13 +50,17 @@ class Document
 
 		return self###
 
-	$remove: (args...) ->
+	$remove: (next) ->
 		self = @
 
 		db = new Database self.$parent.$client, self.$parent.$container
 
 		if self._id
-			return db.destroy(self.$parent.$schemaName, self._id)
+			if next
+				db.destroy(self.$parent.$schemaName, self._id).then (result) ->
+					next result if result instanceof Error
+					next null, result
+			else return db.destroy(self.$parent.$schemaName, self._id)
 		else return new Error "Document not instantiated. Call $save()"
 	
 module.exports = Document

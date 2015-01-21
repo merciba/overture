@@ -10,6 +10,7 @@ var fs = require('fs'),
 var allResults = [];
 var schema = new overture.Schema({ firstname: String, lastname: String, alive: Boolean });
 var RoleModel = overture.model('RoleModels', schema);
+var documents = [];
 
 describe('Overture.Model', function() {
 
@@ -20,6 +21,7 @@ describe('Overture.Model', function() {
 				angela.should.be.instanceOf(Document);
 				angela.$save(function(err, saved) {
 					saved.should.be.instanceOf(Document);
+					documents[0] = saved;
 					done();
 				});
 			});
@@ -28,6 +30,7 @@ describe('Overture.Model', function() {
 		it('should save user to db using a promise', function(done) {
 			RoleModel({ firstname: "Malcolm", lastname: "X", alive: false }).$save().then(function(malcolm) {
 				malcolm.should.be.instanceOf(Document);
+				documents[1] = malcolm;
 				done();
 			});
 		})
@@ -49,12 +52,14 @@ describe('Overture.Model', function() {
 			});
 		});
 
-		it('should remove documents from db', function(done) {
-			RoleModel().find({}).remove(function(err, results) {
-				results.should.be.ok;
-				done();
+		it('should remove document documents from db', function(done) {
+			documents[0].$remove(function(err, result) {
+				result.should.be.ok
+				documents[1].$remove(function(err, result) {
+					result.should.be.ok
+					done();
+				});
 			});
 		});
-
 	});
 });

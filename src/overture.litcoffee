@@ -9,14 +9,10 @@ Here we have the Overture base class. In the constructor, we assign all of the s
 			if args[0] 
 				if (args[0].hasOwnProperty 'storage') and (args[0].hasOwnProperty 'container')
 					@config = args[0]
-					@Schema = require './schema'
-					@Database = require './database'
-					@Document = require './document'
-					@Model = require './model'
 					@models = {}
 					return @
 				else throw new Error "Incorrect config. Config accepts this format: \n{ \nstorage: { ...pkgcloud storage config... }, \ncontainer: '<your-container-name>' \n}"
-			else throw new Error "Incorrect config. Config accepts this format: \n{ \nstorage: { ...pkgcloud storage config... }, \ncontainer: '<your-container-name>' \n}"
+			@
 
 Overture.model() is a function that takes a `name` and `schema`. 
 
@@ -43,5 +39,10 @@ if only `name` is provided, search for an already-registered Model using that na
 				else throw new Error "Schema '#{name}' not found."
 
 			else throw new Error "Model must have a name and Schema passed as args."
+
+		Schema: require './schema'
+		Database: require './database'
+		Document: require './document'
+		Model: require './model'
 
 	module.exports = Overture

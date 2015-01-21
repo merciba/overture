@@ -1,5 +1,4 @@
-var Database, Document, ObjectID, Q,
-  __slice = [].slice;
+var Database, Document, ObjectID, Q;
 
 Q = require('q');
 
@@ -69,13 +68,21 @@ Document = (function() {
   		return self
    */
 
-  Document.prototype.$remove = function() {
-    var args, db, self;
-    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+  Document.prototype.$remove = function(next) {
+    var db, self;
     self = this;
     db = new Database(self.$parent.$client, self.$parent.$container);
     if (self._id) {
-      return db.destroy(self.$parent.$schemaName, self._id);
+      if (next) {
+        return db.destroy(self.$parent.$schemaName, self._id).then(function(result) {
+          if (result instanceof Error) {
+            next(result);
+          }
+          return next(null, result);
+        });
+      } else {
+        return db.destroy(self.$parent.$schemaName, self._id);
+      }
     } else {
       return new Error("Document not instantiated. Call $save()");
     }

@@ -1,14 +1,14 @@
-var Database, ObjectID, Q, events, streamifier,
+var Database, ObjectID, Q, events, objectStream,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Q = require('q');
 
-streamifier = require('streamifier');
-
 events = require('events');
 
 ObjectID = require('bson').BSONPure.ObjectID;
+
+objectStream = require('objectstream');
 
 Database = (function(_super) {
   __extends(Database, _super);
@@ -19,8 +19,25 @@ Database = (function(_super) {
     this;
   }
 
+  Database.prototype.objectStream = function(path, _id) {
+    var objStream, self, writeStream;
+    self = this;
+    if (!path) {
+      path = "";
+    }
+    if (path.slice(-1 === !"/" || "")) {
+      path += "/";
+    }
+    writeStream = self.client.upload({
+      container: self.container,
+      remote: "" + path + _id
+    });
+    objStream = objectStream.createSerializeStream(writeStream);
+    return objStream;
+  };
+
   Database.prototype.write = function(path, obj, next) {
-    var deferred, self;
+    var deferred, objStream, self, writeStream;
     deferred = Q.defer();
     self = this;
     if (!path) {
@@ -32,10 +49,13 @@ Database = (function(_super) {
     if (!obj.hasOwnProperty('_id')) {
       deferred.reject(new Error("No _id"));
     }
-    streamifier.createReadStream(new Buffer(JSON.stringify(obj))).pipe(self.client.upload({
+    writeStream = self.client.upload({
       container: self.container,
       remote: "" + path + obj._id
-    }).on('success', function() {
+    });
+    objStream = objectStream.createSerializeStream(writeStream);
+    objStream.write(obj);
+    writeStream.on('success', function() {
       if (next) {
         next(null, obj);
       }
@@ -44,13 +64,31 @@ Database = (function(_super) {
         document: obj
       });
       return deferred.resolve(obj);
-    }).on('error', function(err) {
+    });
+    writeStream.on('error', function(err) {
       if (next) {
         next(new Error(err));
       }
       return deferred.reject(new Error(err));
-    }));
+    });
+    objStream.end();
     return deferred.promise;
+  };
+
+  Database.prototype.readStream = function(path, _id) {
+    var arr, self;
+    arr = [];
+    self = this;
+    if (!path) {
+      path = "";
+    }
+    if (path.slice(-1 === !"/" || "")) {
+      path += "/";
+    }
+    return self.client.download({
+      container: self.container,
+      remote: "" + path + _id
+    });
   };
 
   Database.prototype.read = function(path, obj, next) {
@@ -88,8 +126,8 @@ Database = (function(_super) {
       remote: "" + path + obj._id
     }).on('data', function(chunk) {
       return arr.push(chunk);
-    }).on('end', function(err, result) {
-      var str;
+    }).on('end', function(err) {
+      var result, str;
       str = Buffer.concat(arr).toString('utf-8');
       if (str.length) {
         result = JSON.parse(str);

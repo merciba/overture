@@ -2,8 +2,8 @@ var fs = require('fs'),
 	assert = require('assert'),
 	should = require('should'),
 	config = require('../config.json'),
-	Overture = require('../index.js');
-	Database = new Overture(config).Database,
+	Overture = require('../index.js'),
+	Database = require('../build/database.js')
 	ObjectID = require('bson').BSONPure.ObjectID;
 
 var client = require('pkgcloud').storage.createClient(config.storage);
@@ -37,6 +37,13 @@ describe('Overture.Database', function() {
 
 	});
 
+	it('should set document as objectStream', function(){
+		var objectStream = db.objectStream(folderName, "test");
+
+		objectStream.write({"foo": "foo"});
+		objectStream.end();
+	});
+
 	it('should get document with path', function(done) {
 		
 		db.read(folderName, _id).then(function(result) {
@@ -55,11 +62,26 @@ describe('Overture.Database', function() {
 
 	});
 
-	it('should destroy document', function(done) {
+	it('should get document as readStream', function(done) {
+		var writeStream = fs.createWriteStream('./test/obj.json'),
+			readStream = db.readStream(folderName, _id);
+
+		writeStream.on("finish", function(err) {
+			require('./obj.json').should.have.property("testString")
+			done();
+		});
+		
+		readStream.pipe(writeStream);
+	});
+
+	it('should destroy documents', function(done) {
 		
 		db.destroy(folderName, _id).then(function(result) {
 			result.should.be.true
-			done();
+			db.destroy(folderName, "test").then(function(result) {
+				result.should.be.true
+				done();
+			}, error);
 		}, error);
 
 	});

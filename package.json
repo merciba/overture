@@ -19,16 +19,16 @@
     "azure"
   ],
   "author": "Merciba",
-  "license": "Apache 2.0",
+  "license": "GPLv3",
   "bugs": {
     "url": "https://github.com/merciba/overture/issues"
   },
   "homepage": "https://github.com/merciba/overture",
   "dependencies": {
     "bson": "^0.2.16",
+    "objectstream": "0.0.4",
     "pkgcloud": "^1.1.0",
-    "q": "^1.1.2",
-    "streamifier": "^0.1.0"
+    "q": "^1.1.2"
   },
   "devDependencies": {
     "gulp": "^3.8.10",
