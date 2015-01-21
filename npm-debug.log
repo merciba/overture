@@ -1,0 +1,112 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/local/bin/node', '/usr/local/bin/npm', 'publish' ]
+2 info using npm@1.4.28
+3 info using node@v0.10.32
+4 verbose publish [ '.' ]
+5 verbose cache add [ '.', null ]
+6 verbose cache add name=undefined spec="." args=[".",null]
+7 verbose parsed url { protocol: null,
+7 verbose parsed url   slashes: null,
+7 verbose parsed url   auth: null,
+7 verbose parsed url   host: null,
+7 verbose parsed url   port: null,
+7 verbose parsed url   hostname: null,
+7 verbose parsed url   hash: null,
+7 verbose parsed url   search: null,
+7 verbose parsed url   query: null,
+7 verbose parsed url   pathname: '.',
+7 verbose parsed url   path: '.',
+7 verbose parsed url   href: '.' }
+8 silly lockFile 3a52ce78- .
+9 verbose lock . /home/safeuser/.npm/3a52ce78-.lock
+10 verbose tar pack [ '/home/safeuser/.npm/overture/0.0.4/package.tgz', '.' ]
+11 verbose tarball /home/safeuser/.npm/overture/0.0.4/package.tgz
+12 verbose folder .
+13 info prepublish overture@0.0.4
+14 silly lockFile 1f1177db-tar tar://.
+15 verbose lock tar://. /home/safeuser/.npm/1f1177db-tar.lock
+16 silly lockFile 576398b1-r-npm-overture-0-0-4-package-tgz tar:///home/safeuser/.npm/overture/0.0.4/package.tgz
+17 verbose lock tar:///home/safeuser/.npm/overture/0.0.4/package.tgz /home/safeuser/.npm/576398b1-r-npm-overture-0-0-4-package-tgz.lock
+18 silly lockFile 1f1177db-tar tar://.
+19 silly lockFile 1f1177db-tar tar://.
+20 silly lockFile 576398b1-r-npm-overture-0-0-4-package-tgz tar:///home/safeuser/.npm/overture/0.0.4/package.tgz
+21 silly lockFile 576398b1-r-npm-overture-0-0-4-package-tgz tar:///home/safeuser/.npm/overture/0.0.4/package.tgz
+22 silly lockFile a521337c-euser-npm-overture-0-0-4-package /home/safeuser/.npm/overture/0.0.4/package
+23 verbose lock /home/safeuser/.npm/overture/0.0.4/package /home/safeuser/.npm/a521337c-euser-npm-overture-0-0-4-package.lock
+24 silly lockFile a521337c-euser-npm-overture-0-0-4-package /home/safeuser/.npm/overture/0.0.4/package
+25 silly lockFile a521337c-euser-npm-overture-0-0-4-package /home/safeuser/.npm/overture/0.0.4/package
+26 silly lockFile 3a52ce78- .
+27 silly lockFile 3a52ce78- .
+28 silly publish { name: 'overture',
+28 silly publish   version: '0.0.4',
+28 silly publish   description: 'An ODM for cloud storage',
+28 silly publish   main: 'index.js',
+28 silly publish   scripts: { test: 'mocha' },
+28 silly publish   repository: { type: 'git', url: 'https://github.com/merciba/overture' },
+28 silly publish   keywords: [ 'odm', 'cloud', 'storage', 's3', 'rackspace', 'azure' ],
+28 silly publish   author: { name: 'Merciba' },
+28 silly publish   license: 'GPLv3',
+28 silly publish   bugs: { url: 'https://github.com/merciba/overture/issues' },
+28 silly publish   homepage: 'https://github.com/merciba/overture',
+28 silly publish   dependencies:
+28 silly publish    { bson: '^0.2.16',
+28 silly publish      objectstream: '0.0.4',
+28 silly publish      pkgcloud: '^1.1.0',
+28 silly publish      q: '^1.1.2' },
+28 silly publish   devDependencies:
+28 silly publish    { gulp: '^3.8.10',
+28 silly publish      'gulp-coffee': '^2.2.0',
+28 silly publish      mocha: '^2.0.1',
+28 silly publish      should: '^4.4.1' },
+28 silly publish   readme: 'Overture\n========\n\nA mongoose-style ODM for cloud storage.\n\nOverture leverages the magic of [pkgcloud](https://github.com/pkgcloud/pkgcloud)\'s stream-capable storage functionality for use as an Object Document Mapper. This allows you to skip using a database entirely, instead querying your Amazon S3 bucket or Rackspace CloudFiles container as your "database".\n\nA typical Amazon S3-enabled Overture config would then look like: \n\n```\n{\n\t"storage" : {\n\t\t"provider" : "amazon",\n\t\t"keyId" : "<keyId>",\n\t\t"key" : "<key>"\n\t},\n\t"container" : "<container>"\n}\n```\n\nwhere `<keyId>` and `<key>` are valid Amazon S3 API credentials and `<container>` is the name of a valid S3 Bucket.\n\nGetting Started\n---------------\n\n```\nnpm install overture\n```\n\nOverture aims to simplify the [Mongoose](http://mongoosejs.com/) syntax for making queries and modeling objects. Initialize like so:\n\n```Javascript\nvar Overture = require(\'overture\'),\n  config = require(\'<path/to/config.json>\'),\n  overture = new Overture(config);\n```\n\nNow you should be able to register a Schema and Model:\n\n```Javascript\nvar schema = new overture.Schema({ firstname: String, lastname: String, alive: Boolean });\nvar RoleModel = overture.model(\'RoleModels\', schema);\n```\n\nAnd instantiate it:\n\n```Javascript\n// Promise-style save\nvar malcolm = RoleModel({ firstname: "Malcolm", lastname: "X", alive: false }) // returns a promise\n\nmalcolm.$save().then(function(malcolm) {\n\t// { "_id": "<overture_document_id>", firstname: "Malcolm", lastname: "X", alive: false } saved to db.\n\tconsole.log(malcolm); // Document instance matching the saved document\n});\n\n// Node-style callback save\nRoleModel({ firstname: "Angela", lastname: "Davis", alive: true }, function(err, angela) {\n\t// {"_id": "<overture_document_id>", firstname: "Angela", lastname: "Davis", alive: true } saved to db.\n\tconsole.log(angela); // Document instance matching the saved document\n});\n```\n\nOverture also supports the chainable promise syntax for its models (which also accept callbacks):\n\n```Javascript\nRoleModel().find({alive: true }, function(err, results) {\n  console.log(results); // [{"_id": "<overture_document_id>", firstname: "Angela", lastname: "Davis", alive: true}]\n});\n\nvar livingRoleModels = RoleModel().find({alive: true }); // returns a promise\n\nlivingRoleModels.exec().then(function(results) {\n\tconsole.log(results); // [{"_id": "<overture_document_id>", firstname: "Angela", lastname: "Davis", alive: true}]\n});\n```\n\nDisclaimer\n----------\nMore documentation coming soon. Not yet ready for production, Please remember that use of this software means providing access to your provider\'s APIs, which use services that may cost you money. Always be careful with your API keys! Merciba is not responsible for any loss or damage caused by use of this software.  ',
+28 silly publish   readmeFilename: 'README.md',
+28 silly publish   gitHead: '7b3e1aefafc4adb97e2a98cff1435746d425d5fa',
+28 silly publish   _id: 'overture@0.0.4',
+28 silly publish   _shasum: 'be99cfaf23b09f951120e2f05218df8e95e16f14',
+28 silly publish   _from: '.' }
+29 verbose request where is /overture
+30 verbose request registry https://registry.npmjs.org/
+31 verbose request id 9505bc158bebe8e3
+32 verbose url raw /overture
+33 verbose url resolving [ 'https://registry.npmjs.org/', './overture' ]
+34 verbose url resolved https://registry.npmjs.org/overture
+35 verbose request where is https://registry.npmjs.org/overture
+36 info trying registry request attempt 1 at 18:11:16
+37 http PUT https://registry.npmjs.org/overture
+38 http 403 https://registry.npmjs.org/overture
+39 verbose headers { date: 'Wed, 21 Jan 2015 23:11:16 GMT',
+39 verbose headers   server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+39 verbose headers   'content-type': 'application/json',
+39 verbose headers   'cache-control': 'max-age=60',
+39 verbose headers   'content-length': '5989',
+39 verbose headers   'accept-ranges': 'bytes',
+39 verbose headers   via: '1.1 varnish',
+39 verbose headers   'x-served-by': 'cache-iad2124-IAD',
+39 verbose headers   'x-cache': 'MISS',
+39 verbose headers   'x-cache-hits': '0',
+39 verbose headers   'x-timer': 'S1421881876.570534,VS0,VE362',
+39 verbose headers   'keep-alive': 'timeout=10, max=50',
+39 verbose headers   connection: 'Keep-Alive' }
+40 error publish Failed PUT 403
+41 error Error: forbidden cannot modify pre-existing version: 0.0.4
+41 error old={"name":"overture","version":"0.0.4","description":"An ODM for cloud storage","main":"index.js","scripts":{"test":"mocha"},"repository":{"type":"git","url":"https://github.com/merciba/overture"},"keywords":["odm","cloud","storage","s3","rackspace","azure"],"author":{"name":"Merciba"},"license":"Apache 2.0","bugs":{"url":"https://github.com/merciba/overture/issues"},"homepage":"https://github.com/merciba/overture","dependencies":{"bson":"^0.2.16","pkgcloud":"^1.1.0","q":"^1.1.2","streamifier":"^0.1.0"},"devDependencies":{"gulp":"^3.8.10","gulp-coffee":"^2.2.0","mocha":"^2.0.1","should":"^4.4.1"},"gitHead":"e6dbdc83ca8c7757d513e55b44936745b7d663c7","_id":"overture@0.0.4","_shasum":"865db3138e5b1616bd2b6837023f6cd5b379593e","_from":".","_npmVersion":"1.4.28","_npmUser":{"name":"merciba","email":"team@merciba.com"},"maintainers":[{"name":"merciba","email":"team@merciba.com"}],"dist":{"shasum":"865db3138e5b1616bd2b6837023f6cd5b379593e","tarball":"http://registry.npmjs.org/overture/-/overture-0.0.4.tgz"}}
+41 error new={"name":"overture","version":"0.0.4","description":"An ODM for cloud storage","main":"index.js","scripts":{"test":"mocha"},"repository":{"type":"git","url":"https://github.com/merciba/overture"},"keywords":["odm","cloud","storage","s3","rackspace","azure"],"author":{"name":"Merciba"},"license":"GPLv3","bugs":{"url":"https://github.com/merciba/overture/issues"},"homepage":"https://github.com/merciba/overture","dependencies":{"bson":"^0.2.16","objectstream":"0.0.4","pkgcloud":"^1.1.0","q":"^1.1.2"},"devDependencies":{"gulp":"^3.8.10","gulp-coffee":"^2.2.0","mocha":"^2.0.1","should":"^4.4.1"},"readme":"Overture\u000a========\u000a\u000aA mongoose-style ODM for cloud storage.\u000a\u000aOverture leverages the magic of [pkgcloud](https://github.com/pkgcloud/pkgcloud)'s stream-capable storage functionality for use as an Object Document Mapper. This allows you to skip using a database entirely, instead querying your Amazon S3 bucket or Rackspace CloudFiles container as your \"database\".\u000a\u000aA typical Amazon S3-enabled Overture config would then look like: \u000a\u000a```\u000a{\u000a\u0009\"storage\" : {\u000a\u0009\u0009\"provider\" : \"amazon\",\u000a\u0009\u0009\"keyId\" : \"<keyId>\",\u000a\u0009\u0009\"key\" : \"<key>\"\u000a\u0009},\u000a\u0009\"container\" : \"<container>\"\u000a}\u000a```\u000a\u000awhere `<keyId>` and `<key>` are valid Amazon S3 API credentials and `<container>` is the name of a valid S3 Bucket.\u000a\u000aGetting Started\u000a---------------\u000a\u000a```\u000anpm install overture\u000a```\u000a\u000aOverture aims to simplify the [Mongoose](http://mongoosejs.com/) syntax for making queries and modeling objects. Initialize like so:\u000a\u000a```Javascript\u000avar Overture = require('overture'),\u000a  config = require('<path/to/config.json>'),\u000a  overture = new Overture(config);\u000a```\u000a\u000aNow you should be able to register a Schema and Model:\u000a\u000a```Javascript\u000avar schema = new overture.Schema({ firstname: String, lastname: String, alive: Boolean });\u000avar RoleModel = overture.model('RoleModels', schema);\u000a```\u000a\u000aAnd instantiate it:\u000a\u000a```Javascript\u000a// Promise-style save\u000avar malcolm = RoleModel({ firstname: \"Malcolm\", lastname: \"X\", alive: false }) // returns a promise\u000a\u000amalcolm.$save().then(function(malcolm) {\u000a\u0009// { \"_id\": \"<overture_document_id>\", firstname: \"Malcolm\", lastname: \"X\", alive: false } saved to db.\u000a\u0009console.log(malcolm); // Document instance matching the saved document\u000a});\u000a\u000a// Node-style callback save\u000aRoleModel({ firstname: \"Angela\", lastname: \"Davis\", alive: true }, function(err, angela) {\u000a\u0009// {\"_id\": \"<overture_document_id>\", firstname: \"Angela\", lastname: \"Davis\", alive: true } saved to db.\u000a\u0009console.log(angela); // Document instance matching the saved document\u000a});\u000a```\u000a\u000aOverture also supports the chainable promise syntax for its models (which also accept callbacks):\u000a\u000a```Javascript\u000aRoleModel().find({alive: true }, function(err, results) {\u000a  console.log(results); // [{\"_id\": \"<overture_document_id>\", firstname: \"Angela\", lastname: \"Davis\", alive: true}]\u000a});\u000a\u000avar livingRoleModels = RoleModel().find({alive: true }); // returns a promise\u000a\u000alivingRoleModels.exec().then(function(results) {\u000a\u0009console.log(results); // [{\"_id\": \"<overture_document_id>\", firstname: \"Angela\", lastname: \"Davis\", alive: true}]\u000a});\u000a```\u000a\u000aDisclaimer\u000a----------\u000aMore documentation coming soon. Not yet ready for production, Please remember that use of this software means providing access to your provider's APIs, which use services that may cost you money. Always be careful with your API keys! Merciba is not responsible for any loss or damage caused by use of this software.  ","readmeFilename":"README.md","gitHead":"7b3e1aefafc4adb97e2a98cff1435746d425d5fa","_id":"overture@0.0.4","_shasum":"be99cfaf23b09f951120e2f05218df8e95e16f14","_from":".","_npmVersion":"1.4.28","_npmUser":{"name":"merciba","email":"team@merciba.com"},"maintainers":[{"name":"merciba","email":"team@merciba.com"}],"dist":{"shasum":"be99cfaf23b09f951120e2f05218df8e95e16f14","tarball":"http://registry.npmjs.org/overture/-/overture-0.0.4.tgz"}}: overture
+41 error     at RegClient.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:308:14)
+41 error     at Request._callback (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:246:65)
+41 error     at Request.self.callback (/usr/local/lib/node_modules/npm/node_modules/request/request.js:236:22)
+41 error     at Request.emit (events.js:98:17)
+41 error     at Request.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:1142:14)
+41 error     at Request.emit (events.js:117:20)
+41 error     at IncomingMessage.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:1096:12)
+41 error     at IncomingMessage.emit (events.js:117:20)
+41 error     at _stream_readable.js:943:16
+41 error     at process._tickCallback (node.js:419:13)
+42 error If you need help, you may report this *entire* log,
+42 error including the npm and node versions, at:
+42 error     <http://github.com/npm/npm/issues>
+43 error System Linux 3.13.0-36-generic
+44 error command "/usr/local/bin/node" "/usr/local/bin/npm" "publish"
+45 error cwd /home/safeuser/overture
+46 error node -v v0.10.32
+47 error npm -v 1.4.28
+48 verbose exit [ 1, true ]
