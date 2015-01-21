@@ -1,2 +1,1 @@
-require('coffee-script').register()
-module.exports = require('./src/overture.litcoffee')
+module.exports = require('./build/overture.js')

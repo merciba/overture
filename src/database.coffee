@@ -54,7 +54,7 @@ class Database extends events.EventEmitter
 				self.emit "download", { action: 'download', document: result }
 				deferred.resolve result
 			else
-				next null, false
+				next null, false if next
 				deferred.resolve false
 
 		return deferred.promise
